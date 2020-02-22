@@ -35,7 +35,7 @@ export const runAttack = ({commit, getters, dispatch}, {battle}) => {
   if (battle.armies.length >= 5) {
     const attacker = getters.getAttacker(battle)
 
-    if (attacker) {
+    if (attacker && getters.getUndefeatedArmies(battle).length > 1) {
       Vue.prototype.$http.put(`/armies/${attacker.id}/attack`)
         .then(({data: attackLog}) => {
           commit('UPDATE_ARMY', {army: attackLog.defender})
@@ -52,8 +52,15 @@ export const runAttack = ({commit, getters, dispatch}, {battle}) => {
  * Army actions
  * **********************************
  */
-export const addArmy = ({commit}, {army, battleId}) => {
-  Vue.prototype.$http.post('/armies', {battle_id: battleId, ...army})
+export const addArmy = ({state, getters, commit}, {army, battleId}) => {
+  // We need to get ordinal number for new army
+  const battle = state.battles.find(b => b.id === battleId)
+  let ordinalNumber = battle.armies.length + 1
+  if (battle.attack_logs.length > 1) {
+    ordinalNumber = getters.getAttacker(battle).ordinal_number
+  }
+
+  Vue.prototype.$http.post('/armies', {battle_id: battleId, ordinal_number: ordinalNumber, ...army})
     .then(({data: army}) => commit('ADD_ARMY', {army}))
     .catch(() => null)
 }

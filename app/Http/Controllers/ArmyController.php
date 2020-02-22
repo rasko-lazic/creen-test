@@ -40,19 +40,15 @@ class ArmyController extends Controller
     {
         $data = $request->validated();
         $battle = Battle::find($data['battle_id']);
-        // If there are no attack logs, the battle hasn't started yet
-        if ($battle->attackLogs->isEmpty()) {
-            $ordinalNumber = $battle->armies()->count() + 1;
-        } else {
-            $ordinalNumber = 1;
-            Army::whereBattleId($battle->id)->increment('ordinal_number');
-        }
+        // Make space for new army
+        Army::whereBattleId($battle->id)
+            ->where('ordinal_number', '>=', $data['ordinal_number'])
+            ->increment('ordinal_number');
 
         return Army::create(array_merge(
             $data,
             [
                 'current_size' => $request->input('size'),
-                'ordinal_number' => $ordinalNumber,
             ]
         ));
     }

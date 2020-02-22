@@ -1,5 +1,5 @@
 <template>
-  <div class="army" :class="{army_attacker: getAttacker(battle).id === army.id}">
+  <div class="army" :class="{army_attacker: isAttacker}">
     <div>
       <p class="army__name">{{ army.name }}</p>
       <p>Status: {{ armyStatus }}</p>
@@ -32,13 +32,18 @@
       armyStatus() {
         return this.army.current_size > 0 ? 'Active' : 'Defeated'
       },
+      isAttacker() {
+        // Attacker shouldn't be marked if he is the winner
+        return this.getUndefeatedArmies(this.battle).length > 1 && this.getAttacker(this.battle).id === this.army.id
+      },
       isWinner() {
-        const undefeatedArmies = this.battle.armies.filter(a => a.current_size > 0)
+        const undefeatedArmies = this.getUndefeatedArmies(this.battle)
 
-        return undefeatedArmies.length === 1 && undefeatedArmies[0].id === this.army.id
+        return this.battle.armies.length > 5 && undefeatedArmies.length === 1 && undefeatedArmies[0].id === this.army.id
       },
       ...mapGetters([
-        'getAttacker'
+        'getAttacker',
+        'getUndefeatedArmies'
       ])
     }
   }

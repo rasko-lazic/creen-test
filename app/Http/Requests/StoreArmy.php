@@ -28,6 +28,7 @@ class StoreArmy extends FormRequest
             'name' => 'required|string',
             'size' => 'required|numeric|min:80|max:100',
             'strategy' => 'required|string|in:Random,Weakest,Strongest',
+            'ordinal_number' => 'required|integer|min:1',
         ];
     }
 }

@@ -25,7 +25,7 @@ export default {
    */
   ['ADD_ARMY'] (state, {army}) {
     let battle = state.battles.find(b => b.id === army.battle_id)
-    battle.armies.push(army)
+    battle.armies.splice(army.ordinal_number - 1, 0, army)
   },
   ['UPDATE_ARMY'] (state, {army}) {
     let battle = state.battles.find(b => b.id === army.battle_id)
