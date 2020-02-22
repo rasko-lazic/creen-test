@@ -41,7 +41,7 @@ class ArmyController extends Controller
         $data = $request->validated();
         $battle = Battle::find($data['battle_id']);
         // If there are no attack logs, the battle hasn't started yet
-        if ($battle->attackLogs->isEmpty) {
+        if ($battle->attackLogs->isEmpty()) {
             $ordinalNumber = $battle->armies()->count() + 1;
         } else {
             $ordinalNumber = 1;

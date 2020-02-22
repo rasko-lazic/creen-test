@@ -10,6 +10,13 @@ Vue.prototype.$http = axios.create({
     baseURL: '/api',
 })
 
+Vue.prototype.$http.interceptors.response.use(response => {
+  return response
+}, ({response: error}) => {
+  store.dispatch('showError', {error})
+  return Promise.reject(error);
+});
+
 new Vue({
   router,
   store,

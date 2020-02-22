@@ -10,7 +10,7 @@ class BattleController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function index()
     {
@@ -41,7 +41,7 @@ class BattleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\BattleController  $battle
+     * @param Battle $battle
      * @return \Illuminate\Http\Response
      */
     public function show(Battle $battle)
@@ -52,7 +52,7 @@ class BattleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Battle  $battle
+     * @param  Battle  $battle
      * @return \Illuminate\Http\Response
      */
     public function edit(Battle $battle)
@@ -80,7 +80,7 @@ class BattleController extends Controller
      */
     public function destroy(Battle $battle)
     {
-        //
+        $battle->delete();
     }
 
     /**

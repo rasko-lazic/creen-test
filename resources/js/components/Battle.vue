@@ -1,59 +1,99 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="battle">
+    <div class="battle__title">
+      <h3>Battle {{ battle.id }}</h3>
+      <div>
+        <button v-show="!armyFormIsVisible" @click="armyFormIsVisible = true">Add army</button>
+        <button @click="deleteBattle({battleId: battle.id})">Delete</button>
+      </div>
+    </div>
+    <div v-if="armyFormIsVisible" class="army-form">
+      <input class="army-form__input" title="Name" placeholder="Name" type="text" v-model="newArmy.name" />
+      <input class="army-form__input" title="Size" placeholder="Size" type="number" min="80" max="100" v-model="newArmy.size" />
+      <select class="army-form__input" title="Strategy" v-model="newArmy.strategy">
+        <option value="Random">Random</option>
+        <option value="Weakest">Weakest</option>
+        <option value="Strongest">Strongest</option>
+      </select>
+      <button :disabled="!formIsValid" @click="callAddArmy">Save</button>
+      <button @click="hideArmyForm">Cancel</button>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+  import {mapActions} from 'vuex'
+
+  export default {
+    name: 'Battle',
+    props: {
+      battle: {
+        type: Object,
+        required: true
+      }
+    },
+    data() {
+      return {
+        armyFormIsVisible: false,
+        newArmy: {
+          name: '',
+          size: '',
+          strategy: null
+        }
+      }
+    },
+    computed: {
+      formIsValid() {
+        return this.newArmy.name.trim().length > 0 &&
+          this.newArmy.size >= 80 && this.newArmy.size <= 100 &&
+          this.newArmy.strategy
+      }
+    },
+    methods: {
+      hideArmyForm() {
+        this.armyFormIsVisible = false
+        this.newArmy = {
+          name: '',
+          size: '',
+          strategy: ''
+        }
+      },
+      callAddArmy() {
+        this.addArmy({army: this.newArmy, battleId: this.battle.id})
+        this.hideArmyForm()
+      },
+      ...mapActions([
+        'deleteBattle',
+        'addArmy'
+      ])
+    }
   }
-}
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<style type="text/scss" lang="scss" scoped>
+  .battle {
+    width: 30%;
+    min-width: 400px;
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid black;
+
+    &__title {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .army-form {
+      margin-top: 15px;
+
+      &__input {
+        box-sizing: border-box;
+        max-width: 130px;
+        min-height: 22px;
+      }
+      button:disabled {
+        opacity: .4;
+      }
+    }
+  }
 </style>

@@ -8,12 +8,11 @@
 
         <!-- Fonts -->
         <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
 
         <script src="http://creen-test.rasko-dev.website:35729/livereload.js?snipver=1"></script>
     </head>
     <body>
-        <div id="app">Test</div>
+        <div id="app"></div>
 
         <script src="{{ mix('/js/app.js') }}"></script>
     </body>

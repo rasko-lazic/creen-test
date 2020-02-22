@@ -17,6 +17,7 @@ class Army extends Model
         'size',
         'current_size',
         'strategy',
+        'ordinal_number',
         'created_at',
         'updated_at',
     ];

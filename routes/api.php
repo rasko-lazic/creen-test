@@ -13,15 +13,16 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['prefix' => 'battles', 'middleware' => 'cors'], function () {
+Route::group(['prefix' => 'battles'], function () {
     Route::get('/', 'BattleController@index');
     Route::get('/{battle}', 'BattleController@show');
     Route::get('/{battle}', 'BattleController@getBattleLog');
     Route::post('/', 'BattleController@store');
     Route::put('/{battle}/reset', 'BattleController@reset');
+    Route::delete('/{battle}', 'BattleController@destroy');
 });
 
-Route::group(['prefix' => 'armies', 'middleware' => 'cors'], function () {
+Route::group(['prefix' => 'armies'], function () {
     Route::post('/', 'ArmyController@store');
     Route::put('/{army}/attack', 'ArmyController@store');
 });
