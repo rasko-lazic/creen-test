@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 
 Route::group(['prefix' => 'battles'], function () {
     Route::get('/', 'BattleController@index');
-    Route::get('/{battle}', 'BattleController@show');
     Route::get('/{battle}', 'BattleController@getBattleLog');
     Route::post('/', 'BattleController@store');
     Route::put('/{battle}/reset', 'BattleController@reset');

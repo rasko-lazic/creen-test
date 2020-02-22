@@ -21,6 +21,11 @@ export const createBattle = ({commit}) => {
     .then(({data: battle}) => commit('ADD_BATTLE', {battle}))
     .catch(() => null)
 }
+export const resetBattle = ({commit}, {battleId}) => {
+  Vue.prototype.$http.put(`/battles/${battleId}/reset`)
+    .then(({data: battle}) => commit('UPDATE_BATTLE', {battle}))
+    .catch(() => null)
+}
 export const deleteBattle = ({commit}, {battleId}) => {
   Vue.prototype.$http.delete(`/battles/${battleId}`)
     .then(() => commit('REMOVE_BATTLE', {battleId}))
@@ -29,8 +34,14 @@ export const deleteBattle = ({commit}, {battleId}) => {
 export const runAttack = ({commit, getters, dispatch}, {battle}) => {
   if (battle.armies.length >= 5) {
     const attacker = getters.getAttacker(battle)
-    Vue.prototype.$http.put(`/armies/${attacker.id}/attack`)
-      .then(({data: attackLog}) => console.log(attackLog))
+
+    if (attacker) {
+      Vue.prototype.$http.put(`/armies/${attacker.id}/attack`)
+        .then(({data: attackLog}) => {
+          commit('UPDATE_ARMY', {army: attackLog.defender})
+          commit('ADD_ATTACK_LOG', {battle, attackLog})
+        })
+    }
   } else {
     dispatch('showError', {error: {message: 'You need more armies for a battle.'}})
   }

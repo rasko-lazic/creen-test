@@ -32,15 +32,20 @@ class Army extends Model
      */
     public function getDefender()
     {
-        $query = $this->battle->armies()->where('id', '<>', $this->id);
+        // Army can't attack itself or defeated armies
+        $query = $this->battle->armies()
+            ->where('id', '<>', $this->id)
+            ->where('current_size', '>', 0);
 
+        // If there are multiple armies with min/max size, get them all and draw defender by random
         switch ($this->strategy) {
-            case 'Random':
-                return $query->get()->random();
             case 'Weakest':
-                return $query->orderBy('current_size')->first();
+                $query = $query->where('current_size', $query->min('current_size'));
+                break;
             case 'Strongest':
-                return $query->orderBy('current_size', 'desc')->first();
+                $query = $query->where('current_size', $query->max('current_size'));
         }
+
+        return $query->get()->random();
     }
 }

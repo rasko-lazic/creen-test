@@ -10,6 +10,10 @@ export default {
   ['ADD_BATTLE'] (state, {battle}) {
     state.battles.push(battle)
   },
+  ['UPDATE_BATTLE'] (state, {battle}) {
+    const battleIndex = state.battles.findIndex(b => b.id === battle.id)
+    state.battles.splice(battleIndex, 1, battle)
+  },
   ['REMOVE_BATTLE'] (state, {battleId}) {
     state.battles = state.battles.filter(b => b.id !== battleId)
   },
@@ -22,6 +26,20 @@ export default {
   ['ADD_ARMY'] (state, {army}) {
     let battle = state.battles.find(b => b.id === army.battle_id)
     battle.armies.push(army)
+  },
+  ['UPDATE_ARMY'] (state, {army}) {
+    let battle = state.battles.find(b => b.id === army.battle_id)
+    const armyIndex = battle.armies.findIndex(a => a.id === army.id)
+    battle.armies.splice(armyIndex, 1, army)
+  },
+
+  /*
+   * **********************************
+   * Attack log mutations
+   * **********************************
+   */
+  ['ADD_ATTACK_LOG'] (state, {battle, attackLog}) {
+    battle.attack_logs.push(attackLog)
   },
 
   /*

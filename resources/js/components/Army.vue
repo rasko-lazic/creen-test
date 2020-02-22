@@ -1,5 +1,5 @@
 <template>
-  <div class="army">
+  <div class="army" :class="{army_attacker: getAttacker(battle).id === army.id}">
     <div>
       <p class="army__name">{{ army.name }}</p>
       <p>Status: {{ armyStatus }}</p>
@@ -9,14 +9,21 @@
       <p>Strategy: {{ army.strategy }}</p>
       <p v-if="army.reloading">Reloading!</p>
     </div>
+    <div v-if="isWinner" class="army__winner-overlay">Winner</div>
   </div>
 </template>
 
 <script>
+  import {mapGetters} from 'vuex'
+
   export default {
     name: 'Army',
     props: {
       army: {
+        type: Object,
+        required: true
+      },
+      battle: {
         type: Object,
         required: true
       }
@@ -24,26 +31,53 @@
     computed: {
       armyStatus() {
         return this.army.current_size > 0 ? 'Active' : 'Defeated'
-      }
+      },
+      isWinner() {
+        const undefeatedArmies = this.battle.armies.filter(a => a.current_size > 0)
+
+        return undefeatedArmies.length === 1 && undefeatedArmies[0].id === this.army.id
+      },
+      ...mapGetters([
+        'getAttacker'
+      ])
     }
   }
 </script>
 
 <style type="text/scss" lang="scss" scoped>
   .army {
+    position: relative;
     display: flex;
     justify-content: space-between;
     margin: 10px 0;
     padding: 10px;
     border: 1px solid blue;
 
+    &_attacker {
+      border: 1px solid red;
+    }
+
     &__name {
       font-size: 14px;
       font-weight: 600;
     }
-
     &__info {
       font-size: 14px;
+    }
+    &__winner-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.6;
+      padding-top: 12px;
+      background-color: white;
+      color: green;
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+      box-sizing: border-box;
     }
   }
 </style>

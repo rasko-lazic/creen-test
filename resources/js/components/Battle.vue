@@ -5,10 +5,11 @@
       <div>
         <button @click="runAttack({battle})">Attack</button>
         <button v-show="!armyFormIsVisible" @click="armyFormIsVisible = true">Add army</button>
+        <button @click="resetBattle({battleId: battle.id})">Restart</button>
         <button @click="deleteBattle({battleId: battle.id})">Delete</button>
       </div>
     </div>
-    <army v-for="army in battle.armies" :army="army" :key="army.id"></army>
+    <army v-for="army in battle.armies" :key="army.id" :army="army" :battle="battle"></army>
     <div v-if="armyFormIsVisible" class="army-form">
       <input class="army-form__input" title="Name" placeholder="Name" type="text" v-model="newArmy.name" />
       <input class="army-form__input" title="Size" placeholder="Size" type="number" min="80" max="100" v-model="newArmy.size" />
@@ -20,12 +21,15 @@
       <button :disabled="!formIsValid" @click="callAddArmy">Save</button>
       <button @click="hideArmyForm">Cancel</button>
     </div>
+
+    <attack-logger :attack-logs="battle.attack_logs"></attack-logger>
   </div>
 </template>
 
 <script>
   import {mapActions} from 'vuex'
   import Army from './Army'
+  import AttackLogger from './AttackLogger'
 
   export default {
     name: 'Battle',
@@ -36,7 +40,8 @@
       }
     },
     components: {
-      Army
+      Army,
+      AttackLogger
     },
     data() {
       return {
@@ -70,6 +75,7 @@
       },
       ...mapActions([
         'deleteBattle',
+        'resetBattle',
         'addArmy',
         'runAttack'
       ])

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\AttackLog;
 use App\Battle;
 use Illuminate\Http\Request;
 
@@ -46,7 +47,7 @@ class BattleController extends Controller
      */
     public function show(Battle $battle)
     {
-        return $battle->loadMissing('armies');
+        //
     }
 
     /**
@@ -104,7 +105,8 @@ class BattleController extends Controller
                 'current_size' => $army->size,
             ]);
         });
+        AttackLog::whereBattleId($battle->id)->delete();
 
-        return $battle;
+        return $battle->loadMissing(['armies', 'attackLogs']);
     }
 }

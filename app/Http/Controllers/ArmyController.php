@@ -125,12 +125,14 @@ class ArmyController extends Controller
             ]);
         }
 
-        return AttackLog::create([
+        $attackLog = AttackLog::create([
             'battle_id' => $army->battle_id,
             'attacker_id' => $army->id,
             'defender_id' => $defender->id,
             'damage' => $damage,
             'created_at' => floor(microtime(true) * 1000),
         ]);
+
+        return $attackLog->loadMissing(['attacker', 'defender']);
     }
 }
