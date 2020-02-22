@@ -1,4 +1,6 @@
 const mix = require('laravel-mix');
+const path = require('path')
+const LiveReloadPlugin = require('webpack-livereload-plugin')
 
 /*
  |--------------------------------------------------------------------------
@@ -11,5 +13,20 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+let webpackConfig = {
+  resolve: {
+    alias: {
+      "vue$": "vue/dist/vue.runtime.esm.js"
+    }
+  },
+  plugins: [
+    new LiveReloadPlugin()
+  ]
+}
+
+
+mix
+  .webpackConfig(webpackConfig)
+  .setPublicPath(path.normalize('../../public'))
+  .js('app.js', 'js')
+  .sass('../sass/app.scss', 'css');

@@ -13,6 +13,15 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['prefix' => 'battles', 'middleware' => 'cors'], function () {
+    Route::get('/', 'BattleController@index');
+    Route::get('/{battle}', 'BattleController@show');
+    Route::get('/{battle}', 'BattleController@getBattleLog');
+    Route::post('/', 'BattleController@store');
+    Route::put('/{battle}/reset', 'BattleController@reset');
+});
+
+Route::group(['prefix' => 'armies', 'middleware' => 'cors'], function () {
+    Route::post('/', 'ArmyController@store');
+    Route::put('/{army}/attack', 'ArmyController@store');
 });
