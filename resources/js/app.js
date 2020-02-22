@@ -12,7 +12,7 @@ Vue.prototype.$http = axios.create({
 
 Vue.prototype.$http.interceptors.response.use(response => {
   return response
-}, ({response: error}) => {
+}, ({response: {data: error}}) => {
   store.dispatch('showError', {error})
   return Promise.reject(error);
 });

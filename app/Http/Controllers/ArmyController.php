@@ -130,6 +130,7 @@ class ArmyController extends Controller
             'attacker_id' => $army->id,
             'defender_id' => $defender->id,
             'damage' => $damage,
+            'created_at' => floor(microtime(true) * 1000),
         ]);
     }
 }

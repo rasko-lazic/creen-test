@@ -3,10 +3,12 @@
     <div class="battle__title">
       <h3>Battle {{ battle.id }}</h3>
       <div>
+        <button @click="runAttack({battle})">Attack</button>
         <button v-show="!armyFormIsVisible" @click="armyFormIsVisible = true">Add army</button>
         <button @click="deleteBattle({battleId: battle.id})">Delete</button>
       </div>
     </div>
+    <army v-for="army in battle.armies" :army="army" :key="army.id"></army>
     <div v-if="armyFormIsVisible" class="army-form">
       <input class="army-form__input" title="Name" placeholder="Name" type="text" v-model="newArmy.name" />
       <input class="army-form__input" title="Size" placeholder="Size" type="number" min="80" max="100" v-model="newArmy.size" />
@@ -23,6 +25,7 @@
 
 <script>
   import {mapActions} from 'vuex'
+  import Army from './Army'
 
   export default {
     name: 'Battle',
@@ -31,6 +34,9 @@
         type: Object,
         required: true
       }
+    },
+    components: {
+      Army
     },
     data() {
       return {
@@ -64,7 +70,8 @@
       },
       ...mapActions([
         'deleteBattle',
-        'addArmy'
+        'addArmy',
+        'runAttack'
       ])
     }
   }
@@ -88,7 +95,7 @@
 
       &__input {
         box-sizing: border-box;
-        max-width: 130px;
+        max-width: 126px;
         min-height: 22px;
       }
       button:disabled {

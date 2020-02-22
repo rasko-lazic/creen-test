@@ -18,7 +18,7 @@ class CreateAttackLogsTable extends Migration
             $table->bigInteger('battle_id')->unsigned();
             $table->bigInteger('attacker_id')->unsigned();
             $table->bigInteger('defender_id')->unsigned();
-            $table->decimal('damage', 3, 2);
+            $table->decimal('damage', 3, 1);
             $table->bigInteger('created_at');
 
             $table->foreign('battle_id')

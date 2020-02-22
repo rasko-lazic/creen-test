@@ -14,7 +14,7 @@ class BattleController extends Controller
      */
     public function index()
     {
-        return Battle::with('armies')->get();
+        return Battle::with(['armies', 'attackLogs'])->get();
     }
 
     /**
@@ -75,8 +75,9 @@ class BattleController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Battle  $battle
+     * @param \App\Battle $battle
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function destroy(Battle $battle)
     {

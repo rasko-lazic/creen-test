@@ -32,13 +32,15 @@ class Army extends Model
      */
     public function getDefender()
     {
+        $query = $this->battle->armies()->where('id', '<>', $this->id);
+
         switch ($this->strategy) {
             case 'Random':
-                return $this->batle->armies()->random();
+                return $query->get()->random();
             case 'Weakest':
-                return $this->batle->armies()->orderBy('current_size')->first();
+                return $query->orderBy('current_size')->first();
             case 'Strongest':
-                return $this->batle->armies()->orderBy('current_size', 'desc')->first();
+                return $query->orderBy('current_size', 'desc')->first();
         }
     }
 }

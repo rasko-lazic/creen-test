@@ -24,5 +24,5 @@ Route::group(['prefix' => 'battles'], function () {
 
 Route::group(['prefix' => 'armies'], function () {
     Route::post('/', 'ArmyController@store');
-    Route::put('/{army}/attack', 'ArmyController@store');
+    Route::put('/{army}/attack', 'ArmyController@attack');
 });

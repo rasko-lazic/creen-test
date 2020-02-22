@@ -18,7 +18,7 @@ class Battle extends Model
 
     public function armies()
     {
-        return $this->hasMany('App\Army');
+        return $this->hasMany('App\Army')->orderBy('ordinal_number');
     }
 
     public function attackLogs()
