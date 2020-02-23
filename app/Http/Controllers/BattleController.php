@@ -15,7 +15,13 @@ class BattleController extends Controller
      */
     public function index()
     {
-        return Battle::with(['armies', 'attackLogs'])->get();
+        $battles = Battle::with(['armies'])->get();
+
+        return $battles->map(function ($battle) {
+            // Setting empty array for attack_logs so log get endpoint can be used
+            $battle->attack_logs = [];
+            return $battle;
+        });
     }
 
     /**
@@ -36,7 +42,9 @@ class BattleController extends Controller
      */
     public function store(Request $request)
     {
-        return Battle::create();
+        $battle = Battle::create();
+
+        return $battle->loadMissing(['armies', 'attackLogs']);
     }
 
     /**
@@ -91,7 +99,7 @@ class BattleController extends Controller
      */
     public function getBattleLog(Battle $battle)
     {
-        return $battle->attackLogs;
+        return $battle->attackLogs()->with(['attacker', 'defender'])->get();
     }
 
     /**

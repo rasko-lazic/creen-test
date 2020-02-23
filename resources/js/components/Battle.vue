@@ -3,10 +3,17 @@
     <div class="battle__title">
       <h3>Battle {{ battle.id }}</h3>
       <div>
-        <button @click="runAttack({battle})">Attack</button>
-        <button v-show="!armyFormIsVisible" @click="armyFormIsVisible = true">Add army</button>
-        <button @click="resetBattle({battleId: battle.id})">Restart</button>
-        <button @click="deleteBattle({battleId: battle.id})">Delete</button>
+        <div>
+          <button :disabled="battle.isDisabled" @click="callRunAttack">Attack</button>
+          <button v-if="battle.isAutomatic" @click="pauseBattle(battle)">Pause battle</button>
+          <button v-else :disabled="battle.isDisabled" @click="startBattle(battle)">Start battle</button>
+          <button @click="resetBattle({battleId: battle.id})">Restart</button>
+        </div>
+        <div>
+          <button v-show="!armyFormIsVisible" @click="armyFormIsVisible = true">Add army</button>
+          <button @click="addRandomArmy">Add random</button>
+          <button @click="deleteBattle({battleId: battle.id})">Delete</button>
+        </div>
       </div>
     </div>
     <army v-for="army in battle.armies" :key="army.id" :army="army" :battle="battle"></army>
@@ -28,6 +35,7 @@
 
 <script>
   import {mapActions} from 'vuex'
+  import {getRandomInt} from '../helpers'
   import Army from './Army'
   import AttackLogger from './AttackLogger'
 
@@ -69,16 +77,40 @@
           strategy: ''
         }
       },
+      addRandomArmy() {
+        this.addArmy({
+          army: {
+            name: `Division_${getRandomInt(100, 999)}`,
+            size: getRandomInt(80, 100),
+            strategy: ['Random', 'Weakest', 'Strongest'][getRandomInt(0, 2)]
+          },
+          battleId: this.battle.id
+        })
+      },
+      callRunAttack() {
+        if (this.battle.armies.length >= 5) {
+          this.runAttack({battle: this.battle}).then(() => null).catch(() => null)
+        } else {
+          this.showError({error: {message: 'You need more armies for a battle.'}})
+        }
+      },
       callAddArmy() {
         this.addArmy({army: this.newArmy, battleId: this.battle.id})
         this.hideArmyForm()
       },
       ...mapActions([
-        'deleteBattle',
-        'resetBattle',
         'addArmy',
-        'runAttack'
+        'showError',
+        'runAttack',
+        'startBattle',
+        'pauseBattle',
+        'resetBattle',
+        'deleteBattle',
+        'getAttackLogs',
       ])
+    },
+    created() {
+      this.getAttackLogs(this.battle)
     }
   }
 </script>
@@ -103,9 +135,6 @@
         box-sizing: border-box;
         max-width: 126px;
         min-height: 22px;
-      }
-      button:disabled {
-        opacity: .4;
       }
     }
   }

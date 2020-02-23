@@ -117,7 +117,7 @@ class ArmyController extends Controller
             $damage = $army->current_size === 1 ? 1 : $army->current_size * 0.5;
             $defenderCurrentSize = $defender->current_size - floor($damage);
             $defender->update([
-                'current_size' => $defenderCurrentSize >= 0 ? $defenderCurrentSize : 0,
+                'current_size' => $defenderCurrentSize < 0 ? 0 : $defenderCurrentSize,
             ]);
         }
 
@@ -126,6 +126,8 @@ class ArmyController extends Controller
             'attacker_id' => $army->id,
             'defender_id' => $defender->id,
             'damage' => $damage,
+            'attacker_victorious' => $army->battle->armies()->where('current_size', '>', 0)->count() === 1,
+            'defender_defeated' => $defender->current_size === 0,
             'created_at' => floor(microtime(true) * 1000),
         ]);
 

@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export default {
   /*
    * **********************************
@@ -5,17 +7,26 @@ export default {
    * **********************************
    */
   ['SET_BATTLES'] (state, {battles}) {
-    state.battles = battles
+    Vue.set(state, 'battles', battles.map(battle => generateBattleObject(battle)))
   },
   ['ADD_BATTLE'] (state, {battle}) {
+    battle = generateBattleObject(battle)
     state.battles.push(battle)
   },
   ['UPDATE_BATTLE'] (state, {battle}) {
     const battleIndex = state.battles.findIndex(b => b.id === battle.id)
-    state.battles.splice(battleIndex, 1, battle)
+    battle = generateBattleObject(battle)
+
+    battleIndex > -1 && state.battles.splice(battleIndex, 1, battle)
   },
   ['REMOVE_BATTLE'] (state, {battleId}) {
     state.battles = state.battles.filter(b => b.id !== battleId)
+  },
+  ['SET_BATTLE_IS_DISABLED'] (state, {battle, value}) {
+    Vue.set(battle, 'isDisabled', value)
+  },
+  ['SET_BATTLE_IS_AUTOMATIC'] (state, {battle, value}) {
+    Vue.set(battle, 'isAutomatic', value)
   },
 
   /*
@@ -38,6 +49,9 @@ export default {
    * Attack log mutations
    * **********************************
    */
+  ['SET_ATTACK_LOGS'] (state, {battle, attackLogs}) {
+    Vue.set(battle, 'attack_logs', attackLogs)
+  },
   ['ADD_ATTACK_LOG'] (state, {battle, attackLog}) {
     battle.attack_logs.push(attackLog)
   },
@@ -52,6 +66,14 @@ export default {
   },
   ['SET_ERROR_MESSAGE'] (state, {message}) {
     state.error.message = message
+  }
+}
+
+export const generateBattleObject = battle => {
+  return {
+    ...battle,
+    isDisabled: false,
+    isAutomatic: false,
   }
 }
 

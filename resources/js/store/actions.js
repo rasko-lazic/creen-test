@@ -10,6 +10,11 @@ export const getBattles = ({commit}) => {
     .then(({data: battles}) => commit('SET_BATTLES', {battles}))
     .catch(() => null)
 }
+export const getAttackLogs = ({commit}, battle) => {
+  Vue.prototype.$http.get(`/battles/${battle.id}`)
+    .then(({data: attackLogs}) => commit('SET_ATTACK_LOGS', {battle, attackLogs}))
+    .catch(() => null)
+}
 
 /*
  * **********************************
@@ -31,21 +36,37 @@ export const deleteBattle = ({commit}, {battleId}) => {
     .then(() => commit('REMOVE_BATTLE', {battleId}))
     .catch(() => null)
 }
-export const runAttack = ({commit, getters, dispatch}, {battle}) => {
-  if (battle.armies.length >= 5) {
-    const attacker = getters.getAttacker(battle)
+export const startBattle = ({state, commit, getters, dispatch}, battle) => {
+  !battle.isAutomatic && commit('SET_BATTLE_IS_AUTOMATIC', {battle, value: true})
 
-    if (attacker && getters.getUndefeatedArmies(battle).length > 1) {
-      Vue.prototype.$http.put(`/armies/${attacker.id}/attack`)
-        .then(({data: attackLog}) => {
-          commit('UPDATE_ARMY', {army: attackLog.defender})
-          commit('ADD_ATTACK_LOG', {battle, attackLog})
-        })
-    }
-  } else {
-    dispatch('showError', {error: {message: 'You need more armies for a battle.'}})
-  }
+  dispatch('runAttack', {battle})
+    .then(() => {
+      battle.isAutomatic && dispatch('startBattle', battle)
+    })
+    .catch(() => dispatch('pauseBattle', battle))
 }
+export const pauseBattle = ({commit, dispatch}, battle) => {
+  commit('SET_BATTLE_IS_AUTOMATIC', {battle, value: false})
+}
+export const runAttack = ({commit, getters, dispatch}, {battle}) => new Promise((resolve, reject) => {
+  commit('SET_BATTLE_IS_DISABLED', {battle, value: true})
+
+  const attacker = getters.getAttacker(battle)
+  if (attacker && getters.getUndefeatedArmies(battle).length > 1) {
+    Vue.prototype.$http.put(`/armies/${attacker.id}/attack`)
+      .then(({data: attackLog}) => {
+        commit('UPDATE_ARMY', {army: attackLog.defender})
+        commit('ADD_ATTACK_LOG', {battle, attackLog})
+        resolve()
+        commit('SET_BATTLE_IS_DISABLED', {battle, value: false})
+      })
+      .catch(() => commit('SET_BATTLE_IS_DISABLED', {battle, value: false}))
+      .catch(() => reject())
+  } else {
+    commit('SET_BATTLE_IS_DISABLED', {battle, value: false})
+    reject()
+  }
+})
 
 /*
  * **********************************

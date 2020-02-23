@@ -5,7 +5,9 @@
       <p>Status: {{ armyStatus }}</p>
     </div>
     <div class="army__info">
-      <p>Current army size: {{ army.current_size }}</p>
+      <p>Current army size:
+        <span :style="{color: army.current_size > 0 ? 'limegreen' : 'red'}">{{ army.current_size }}</span>
+      </p>
       <p>Strategy: {{ army.strategy }}</p>
       <p v-if="army.reloading">Reloading!</p>
     </div>
@@ -39,7 +41,7 @@
       isWinner() {
         const undefeatedArmies = this.getUndefeatedArmies(this.battle)
 
-        return this.battle.armies.length > 5 && undefeatedArmies.length === 1 && undefeatedArmies[0].id === this.army.id
+        return this.battle.armies.length > 4 && undefeatedArmies.length === 1 && undefeatedArmies[0].id === this.army.id
       },
       ...mapGetters([
         'getAttacker',

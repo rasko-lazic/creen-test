@@ -19,6 +19,8 @@ class AttackLog extends Model
         'attacker_id',
         'defender_id',
         'damage',
+        'attacker_victorious',
+        'defender_defeated',
         'created_at',
     ];
 
