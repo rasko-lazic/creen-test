@@ -36,12 +36,14 @@ export default {
    */
   ['ADD_ARMY'] (state, {army}) {
     let battle = state.battles.find(b => b.id === army.battle_id)
-    battle.armies.splice(army.ordinal_number - 1, 0, army)
+    battle.armies.splice(army.ordinal_number - 1, 0, generateArmyObject(army))
   },
-  ['UPDATE_ARMY'] (state, {army}) {
-    let battle = state.battles.find(b => b.id === army.battle_id)
-    const armyIndex = battle.armies.findIndex(a => a.id === army.id)
-    battle.armies.splice(armyIndex, 1, army)
+  ['UPDATE_ARMY_SIZE'] (state, {battle, armyId, currentSize}) {
+    let army = battle.armies.find(a => a.id === armyId)
+    Vue.set(army, 'current_size', currentSize)
+  },
+  ['SET_ARMY_RELOAD_PROMISE'] (state, {army, promise}) {
+    Vue.set(army, 'reloadPromise', promise)
   },
 
   /*
@@ -72,8 +74,15 @@ export default {
 export const generateBattleObject = battle => {
   return {
     ...battle,
+    armies: battle.armies.map(army => generateArmyObject(army)),
     isDisabled: false,
-    isAutomatic: false,
+    isAutomatic: false
+  }
+}
+export const generateArmyObject = army => {
+  return {
+    ...army,
+    reloadPromise: null
   }
 }
 

@@ -55,8 +55,11 @@ export const runAttack = ({commit, getters, dispatch}, {battle}) => new Promise(
   if (attacker && getters.getUndefeatedArmies(battle).length > 1) {
     Vue.prototype.$http.put(`/armies/${attacker.id}/attack`)
       .then(({data: attackLog}) => {
-        commit('UPDATE_ARMY', {army: attackLog.defender})
+        // Updating current_size with fresh backend data
+        commit('UPDATE_ARMY_SIZE', {battle, armyId: attackLog.defender.id, currentSize: attackLog.defender.current_size})
         commit('ADD_ATTACK_LOG', {battle, attackLog})
+        console.log(`Reload promise started for ${attackLog.attacker.current_size} units`)
+        dispatch('startReload', {battle, armyId: attackLog.attacker_id})
         resolve()
         commit('SET_BATTLE_IS_DISABLED', {battle, value: false})
       })
@@ -84,6 +87,19 @@ export const addArmy = ({state, getters, commit}, {army, battleId}) => {
   Vue.prototype.$http.post('/armies', {battle_id: battleId, ordinal_number: ordinalNumber, ...army})
     .then(({data: army}) => commit('ADD_ARMY', {army}))
     .catch(() => null)
+}
+export const startReload = ({state, commit}, {battle, armyId}) => {
+  console.log('Reload starting')
+  let army = battle.armies.find(a => a.id === armyId)
+  let promise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve()
+      commit('SET_ARMY_RELOAD_PROMISE', {army, promise: null})
+      console.log('Army reloaded')
+    }, army.current_size * state.reloadIntervalPerUnit)
+  })
+
+  commit('SET_ARMY_RELOAD_PROMISE', {army, promise})
 }
 
 /*

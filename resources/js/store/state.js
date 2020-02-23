@@ -4,5 +4,7 @@ export default {
     message: ''
   },
 
-  battles: []
+  battles: [],
+
+  reloadIntervalPerUnit: 100 // interval in ms
 }

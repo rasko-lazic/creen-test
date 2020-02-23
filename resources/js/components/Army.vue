@@ -9,9 +9,9 @@
         <span :style="{color: army.current_size > 0 ? 'limegreen' : 'red'}">{{ army.current_size }}</span>
       </p>
       <p>Strategy: {{ army.strategy }}</p>
-      <p v-if="army.reloading">Reloading!</p>
     </div>
-    <div v-if="isWinner" class="army__winner-overlay">Winner</div>
+    <div v-if="isWinner" class="army__overlay army__overlay_winner">Winner</div>
+    <div v-if="army.reloadPromise && !isWinner" class="army__overlay army__overlay_reloading">Reloading!</div>
   </div>
 </template>
 
@@ -71,7 +71,7 @@
     &__info {
       font-size: 14px;
     }
-    &__winner-overlay {
+    &__overlay {
       position: absolute;
       top: 0;
       left: 0;
@@ -80,11 +80,17 @@
       opacity: 0.6;
       padding-top: 12px;
       background-color: white;
-      color: green;
       font-size: 32px;
       font-weight: bold;
       text-align: center;
       box-sizing: border-box;
+
+      &_winner {
+        color: green;
+      }
+      &_reloading {
+        color: red;
+      }
     }
   }
 </style>

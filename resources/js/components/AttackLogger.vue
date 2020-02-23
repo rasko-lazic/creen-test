@@ -2,7 +2,7 @@
   <div v-if="attackLogs.length > 0" class="attack-logger">
     <h4 class="attack-logger__title">Attack logs</h4>
     <p v-for="log in attackLogs" :key="log.id" class="attack-logger__log">
-      {{ `${moment(log.created_at, 'x').format('HH:mm:ss.SSS')} - ${getParsedLogCaption(log)}` }}
+      {{ `${moment(log.created_at, 'x').format('HH:mm:ss.SS')} - ${getParsedLogCaption(log)}` }}
     </p>
   </div>
 </template>
