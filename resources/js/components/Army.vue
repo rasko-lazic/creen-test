@@ -1,5 +1,5 @@
 <template>
-  <div class="army" :class="{army_attacker: isAttacker}">
+  <div class="army" :class="{army_attacker: isAttacker, army_defeated: army.current_size === 0}">
     <div>
       <p class="army__name">{{ army.name }}</p>
       <p>Status: {{ armyStatus }}</p>
@@ -62,6 +62,9 @@
 
     &_attacker {
       border: 1px solid red;
+    }
+    &_defeated {
+      opacity: .2;
     }
 
     &__name {

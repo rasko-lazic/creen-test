@@ -4,15 +4,15 @@
       <h3>Battle {{ battle.id }}</h3>
       <div>
         <div>
-          <button :disabled="battle.isDisabled" @click="callRunAttack">Attack</button>
           <button v-if="battle.isAutomatic" @click="pauseBattle(battle)">Pause battle</button>
-          <button v-else :disabled="battle.isDisabled" @click="startBattle(battle)">Start battle</button>
-          <button @click="resetBattle({battleId: battle.id})">Restart</button>
+          <button v-else :disabled="battle.isDisabled || winnerExists" @click="startBattle(battle)">Start battle</button>
+          <button @click="resetBattle({battleId: battle.id})">Restart battle</button>
+          <button @click="deleteBattle({battleId: battle.id})">Delete battle</button>
         </div>
         <div>
+          <button :disabled="battle.isDisabled || winnerExists" @click="callRunAttack">Attack</button>
           <button v-show="!armyFormIsVisible" @click="armyFormIsVisible = true">Add army</button>
-          <button @click="addRandomArmy">Add random</button>
-          <button @click="deleteBattle({battleId: battle.id})">Delete</button>
+          <button @click="addRandomArmy">Add random army</button>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-  import {mapActions} from 'vuex'
+  import {mapActions, mapGetters} from 'vuex'
   import {getRandomInt} from '../helpers'
   import Army from './Army'
   import AttackLogger from './AttackLogger'
@@ -66,7 +66,13 @@
         return this.newArmy.name.trim().length > 0 &&
           this.newArmy.size >= 80 && this.newArmy.size <= 100 &&
           this.newArmy.strategy
-      }
+      },
+      winnerExists() {
+        return this.getUndefeatedArmies(this.battle).length === 1
+      },
+      ...mapGetters([
+        'getUndefeatedArmies'
+      ])
     },
     methods: {
       hideArmyForm() {
@@ -89,7 +95,7 @@
       },
       callRunAttack() {
         if (this.battle.armies.length >= 5) {
-          this.runAttack({battle: this.battle}).then(() => null).catch(() => null)
+          this.runAttack({battle: this.battle}).catch(() => null)
         } else {
           this.showError({error: {message: 'You need more armies for a battle.'}})
         }

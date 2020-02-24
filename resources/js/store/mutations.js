@@ -36,6 +36,10 @@ export default {
    */
   ['ADD_ARMY'] (state, {army}) {
     let battle = state.battles.find(b => b.id === army.battle_id)
+    // Make space in ordinal number for new army
+    battle.armies.filter(a => a.ordinal_number >= army.ordinal_number).forEach(a => {
+      Vue.set(a, 'ordinal_number', a.ordinal_number + 1)
+    })
     battle.armies.splice(army.ordinal_number - 1, 0, generateArmyObject(army))
   },
   ['UPDATE_ARMY_SIZE'] (state, {battle, armyId, currentSize}) {
@@ -73,6 +77,7 @@ export default {
   }
 }
 
+// Fill backend data with frontend specific stuff before storing them in vuex state
 export const generateBattleObject = battle => {
   return {
     ...battle,

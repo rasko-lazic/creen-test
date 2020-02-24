@@ -48,7 +48,8 @@ class ArmyController extends Controller
         return Army::create(array_merge(
             $data,
             [
-                'current_size' => $request->input('size'),
+                'size' => (int) $request->input('size'),
+                'current_size' => (int) $request->input('size'),
             ]
         ));
     }
