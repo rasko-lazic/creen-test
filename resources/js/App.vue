@@ -7,7 +7,12 @@
         <battle v-for="battle in battles" :key="battle.id" :battle="battle"></battle>
       </div>
     </div>
-    <p v-if="errorIsVisible" class="sticky-error">{{ errorMessage }}</p>
+    <p v-if="errorIsVisible" class="error-container">{{ errorMessage }}</p>
+    <div class="legend">
+      <p>Legend</p>
+      <p class="legend__caption legend__caption_blue">Stand-by army</p>
+      <p class="legend__caption legend__caption_red">Attacking army</p>
+    </div>
   </div>
 </template>
 
@@ -44,7 +49,7 @@
     text-align: center;
 
     &__title {
-      padding: 20px;
+      padding: 30px;
       color: #2c3e50;
       font-size: 24px;
       font-weight: bold;
@@ -55,11 +60,12 @@
       align-items: flex-start;
       justify-content: space-around;
       flex-wrap: wrap;
-      padding: 30px 20px;
+      padding: 40px 20px;
       text-align: left;
     }
   }
-  .sticky-error {
+
+  .error-container {
     bottom: 0;
     position: fixed;
     width: 100%;
@@ -68,5 +74,27 @@
     color: white;
     font-size: 14px;
     text-align: center;
+  }
+
+  .legend {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 10px;
+    border: 1px solid black;
+
+    &__caption {
+      margin-top: 10px;
+      font-size: 14px;
+      padding: 2px 4px;
+      border: 1px solid;
+
+      &_blue {
+        border-color: blue;
+      }
+      &_red {
+        border-color: red;
+      }
+    }
   }
 </style>

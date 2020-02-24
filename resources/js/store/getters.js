@@ -21,3 +21,5 @@ export const getAttacker = state => battle => {
 }
 
 export const getUndefeatedArmies = state => battle => battle.armies.filter(a => a.current_size > 0)
+
+export const getBattleById = state => battleId => state.battles.find(b => b.id === battleId)

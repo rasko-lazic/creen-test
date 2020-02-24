@@ -37,11 +37,16 @@ class BattleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
+     * @throws \Exception
      */
     public function store(Request $request)
     {
+        if (Battle::count() >= 5) {
+            throw new \Exception('You can\'t have more than five battles.');
+        }
+
         $battle = Battle::create();
 
         return $battle->loadMissing(['armies', 'attackLogs']);

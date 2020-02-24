@@ -40,6 +40,8 @@ export default {
   },
   ['UPDATE_ARMY_SIZE'] (state, {battle, armyId, currentSize}) {
     let army = battle.armies.find(a => a.id === armyId)
+    // Clear reload promise if army is defeated
+    currentSize === 0 && Vue.set(army, 'reloadPromise', null)
     Vue.set(army, 'current_size', currentSize)
   },
   ['SET_ARMY_RELOAD_PROMISE'] (state, {army, promise}) {
