@@ -6,5 +6,5 @@ export default {
 
   battles: [],
 
-  reloadIntervalPerUnit: 100 // interval in ms
+  reloadIntervalPerUnit: 10 // interval in ms
 }
