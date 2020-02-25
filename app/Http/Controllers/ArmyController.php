@@ -106,7 +106,7 @@ class ArmyController extends Controller
      */
     public function attack(Army $army)
     {
-        if (count($army->battle->armies) < 5) {
+        if (count($army->battle->armies) < config('constants.MIN_ARMY_COUNT_FOR_BATTLE')) {
             throw new \Exception('You need at least 5 armies to start a battle.');
         }
 
@@ -115,7 +115,10 @@ class ArmyController extends Controller
 
         // Condition is basic simulation of probability where one alive unit equals one percentage chance of attack
         if (mt_rand(1, 100) <= $army->current_size) {
-            $damage = $army->current_size === 1 ? 1 : $army->current_size * 0.5;
+            $damage = max(
+                config('constants.MIN_ARMY_DAMAGE'),
+                $army->current_size * config('constants.ARMY_DAMAGE_PER_UNIT')
+            );
             $defenderCurrentSize = $defender->current_size - floor($damage);
             $defender->update([
                 'current_size' => $defenderCurrentSize < 0 ? 0 : $defenderCurrentSize,

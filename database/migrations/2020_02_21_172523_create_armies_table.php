@@ -20,7 +20,7 @@ class CreateArmiesTable extends Migration
             $table->integer('size');
             $table->integer('current_size');
             $table->integer('ordinal_number');
-            $table->enum('strategy', ['Random', 'Weakest', 'Strongest']);
+            $table->enum('strategy', array_values(config('constants.strategies')));
             $table->timestamps();
 
             $table->foreign('battle_id')

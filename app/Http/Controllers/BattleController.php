@@ -43,7 +43,7 @@ class BattleController extends Controller
      */
     public function store(Request $request)
     {
-        if (Battle::count() >= 5) {
+        if (Battle::count() >= config('constants.MAX_BATTLE_COUNT')) {
             throw new \Exception('You can\'t have more than five battles.');
         }
 

@@ -39,10 +39,10 @@ class Army extends Model
 
         // If there are multiple armies with min/max size, get them all and draw defender by random
         switch ($this->strategy) {
-            case 'Weakest':
+            case config('constants.strategies.WEAKEST'):
                 $query = $query->where('current_size', $query->min('current_size'));
                 break;
-            case 'Strongest':
+            case config('constants.strategies.STRONGEST'):
                 $query = $query->where('current_size', $query->max('current_size'));
         }
 
