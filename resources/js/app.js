@@ -3,11 +3,12 @@ import App from './App.vue'
 // import router from './router'
 import store from './store'
 import axios from 'axios'
+import config from './config'
 
 Vue.config.productionTip = false
 
 Vue.prototype.$http = axios.create({
-    baseURL: '/api',
+    baseURL: `${config.apiUrl}/api`,
 })
 
 Vue.prototype.$http.interceptors.response.use(response => {
