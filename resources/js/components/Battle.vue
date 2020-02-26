@@ -10,7 +10,7 @@
           <button @click="deleteBattle({battleId: battle.id})">Delete battle</button>
         </div>
         <div>
-          <button :disabled="battle.isDisabled || winnerExists" @click="callRunAttack">Attack</button>
+          <button :disabled="battle.isDisabled || winnerExists" @click="runAttack({battle})">Attack</button>
           <button v-show="!armyFormIsVisible" @click="armyFormIsVisible = true">Add army</button>
           <button @click="addRandomArmy">Add random army</button>
         </div>
@@ -93,20 +93,12 @@
           battleId: this.battle.id
         })
       },
-      callRunAttack() {
-        if (this.battle.armies.length >= 5) {
-          this.runAttack({battle: this.battle}).catch(() => null)
-        } else {
-          this.showError({error: {message: 'You need more armies for a battle.'}})
-        }
-      },
       callAddArmy() {
         this.addArmy({newArmy: this.newArmy, battleId: this.battle.id})
         this.hideArmyForm()
       },
       ...mapActions([
         'addArmy',
-        'showError',
         'runAttack',
         'startBattle',
         'pauseBattle',

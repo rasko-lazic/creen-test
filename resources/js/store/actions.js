@@ -59,15 +59,18 @@ export const resetBattle = async ({commit, getters, dispatch}, {battleId}) => {
     // Error is parsed in axios interceptor
   }
 }
-export const startBattle = ({state, commit, getters, dispatch}, battle) => {
+export const startBattle = async ({commit, dispatch}, battle) => {
   // Since the action will be called again, isAutomatic should be set only if it's needed
   !battle.isAutomatic && commit('SET_BATTLE_IS_AUTOMATIC', {battle, value: true})
 
-  dispatch('runAttack', {battle})
+  const attackSuccessful = await dispatch('runAttack', {battle})
+  if (attackSuccessful) {
     // Check if battle is still in automatic mode after the attack request is resolved
-    .then(() => battle.isAutomatic && dispatch('startBattle', battle))
+    battle.isAutomatic && dispatch('startBattle', battle)
+  } else {
     // If the attack wasn't completed for any reason, auto mode is terminated
-    .catch(() => dispatch('pauseBattle', battle))
+    dispatch('pauseBattle', battle)
+  }
 }
 export const pauseBattle = ({commit, dispatch}, battle) => {
   commit('SET_BATTLE_IS_AUTOMATIC', {battle, value: false})
@@ -78,48 +81,43 @@ export const pauseBattle = ({commit, dispatch}, battle) => {
  * Attack actions
  * **********************************
  */
-export const runAttack = ({commit, getters, dispatch}, {battle}) => new Promise((resolve, reject) => {
+export const runAttack = async ({commit, getters, dispatch}, {battle}) => {
+  let attackPerformed = false
   // Disable battle so it can't take any attack commands until attack is resolved
   commit('SET_BATTLE_IS_DISABLED', {battle, value: true})
   const attacker = getters.getAttacker(battle)
 
   // Check if valid attacker exists
   if (attacker && getters.getUndefeatedArmies(battle).length > 1) {
+    // If attacker is currently reloading wait until reload is complete before firing an attack
     if (attacker.reloadPromise) {
-      // If attacker is currently reloading wait until reload is complete before firing an attack
-      attacker.reloadPromise.then(battleIsAutomatic => {
-        // If the battle stopped being in auto mode during the wait for reloadPromise, the attack is halted
-        // and battle isn't disabled any more
-        if (battleIsAutomatic) {
-          // Attacker getter is used instead of attacker object just in case new army was added
-          // while we were waiting for reloadPromise to resolve
-          dispatch('fireAttack', {battle, armyId: getters.getAttacker(battle).id, resolve, reject})
-            .finally(() => commit('SET_BATTLE_IS_DISABLED', {battle, value: false}))
-        } else {
-          commit('SET_BATTLE_IS_DISABLED', {battle, value: false})
-        }
-      })
+      // If the battle stopped being in auto mode during the wait for reloadPromise, the attack is halted
+      // and battle isn't disabled any more
+      if (await attacker.reloadPromise) {
+        // Attacker getter is used instead of attacker object just in case new army was added
+        // while we were waiting for reloadPromise to resolve
+        attackPerformed = await dispatch('fireAttack', {battle, armyId: getters.getAttacker(battle).id})
+      }
     } else {
       // If there is no reloadPromise, just fire the attack normally
-      dispatch('fireAttack', {battle, armyId: attacker.id, resolve, reject})
-        .finally(() => commit('SET_BATTLE_IS_DISABLED', {battle, value: false}))
+      attackPerformed = await dispatch('fireAttack', {battle, armyId: attacker.id})
     }
-  } else {
-    // If there are no available attackers or if a winner is decided cancel the attack
-    commit('SET_BATTLE_IS_DISABLED', {battle, value: false})
-    reject()
   }
-})
-export const fireAttack = ({commit, dispatch}, {battle, armyId, resolve, reject}) => {
-  Vue.prototype.$http.put(`/armies/${armyId}/attack`)
-    .then(({data: attackLog}) => {
-      // Updating current_size of defender with fresh backend data
-      commit('UPDATE_ARMY_SIZE', {battle, armyId: attackLog.defender.id, currentSize: attackLog.defender.current_size})
-      commit('ADD_ATTACK_LOG', {battle, attackLog})
-      dispatch('startReload', {battle, armyId: attackLog.attacker_id})
-      resolve()
-    })
-    .catch(reject)
+
+  commit('SET_BATTLE_IS_DISABLED', {battle, value: false})
+  return attackPerformed
+}
+export const fireAttack = async ({commit, dispatch}, {battle, armyId}) => {
+  try {
+    let {data: attackLog} = await Vue.prototype.$http.put(`/armies/${armyId}/attack`)
+    // Updating current_size of defender with fresh backend data
+    commit('UPDATE_ARMY_SIZE', {battle, armyId: attackLog.defender.id, currentSize: attackLog.defender.current_size})
+    commit('ADD_ATTACK_LOG', {battle, attackLog})
+    dispatch('startReload', {battle, armyId: attackLog.attacker_id})
+    return true
+  } catch (e) {
+    return false
+  }
 }
 
 /*
