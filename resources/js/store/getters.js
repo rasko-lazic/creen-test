@@ -1,6 +1,8 @@
+import config from '../config';
+
 export const getAttacker = state => battle => {
   // There is no next attacker if battle can't start
-  if (battle.armies.length < 5) {
+  if (battle.armies.length < config.minArmiesForBattle) {
     return false
   }
 

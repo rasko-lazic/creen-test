@@ -14,6 +14,7 @@ class CORS {
      * @return mixed
      */
     public function handle($request, Closure $next) {
+        // For testing purposes, allow everything
         $headers = [
             'Access-Control-Allow-Origin' => '*',
             'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, PUT, PATCH, DELETE',

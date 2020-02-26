@@ -1,5 +1,6 @@
 export default {
   apiUrl: 'http://creen-test.rasko-dev.website',
 
-  reloadIntervalPerUnit: 100 // interval in ms
+  minArmiesForBattle: 5,
+  reloadIntervalPerUnit: 10 // interval in ms
 }

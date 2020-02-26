@@ -1,6 +1,6 @@
 const mix = require('laravel-mix');
 const path = require('path')
-const LiveReloadPlugin = require('webpack-livereload-plugin')
+// const LiveReloadPlugin = require('webpack-livereload-plugin')
 
 /*
  |--------------------------------------------------------------------------
@@ -20,13 +20,18 @@ let webpackConfig = {
     }
   },
   plugins: [
-    new LiveReloadPlugin()
+    // new LiveReloadPlugin()
   ]
 }
+
+mix.options({
+  hmrOptions: {
+    port: 3030
+  }
+})
 
 
 mix
   .webpackConfig(webpackConfig)
-  .setPublicPath(path.normalize('../../public'))
-  .js('app.js', 'js')
-  .sass('../sass/app.scss', 'css');
+  .js('app.js', 'dist/js')
+  .sass('../sass/app.scss', 'dist/css');
