@@ -13,5 +13,5 @@ Run migrations with `php artisan migrate`
 
 Go into `resources/js`
 Run `npm i` to install npm packages
-Run `npm run dev` to build frontend app
+Run `npm run hot` to serve frontend app at `http://localhost:3030/`
 
