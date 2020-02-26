@@ -5,15 +5,21 @@ import Vue from 'vue'
  * Initial data fetch
  * **********************************
  */
-export const getBattles = ({commit}) => {
-  Vue.prototype.$http.get('/battles')
-    .then(({data: battles}) => commit('SET_BATTLES', {battles}))
-    .catch(() => null)
+export const getBattles = async ({commit}) => {
+  try {
+    let {data: battles} = await Vue.prototype.$http.get('/battles')
+    commit('SET_BATTLES', {battles})
+  } catch (e) {
+    // Error is parsed in axios interceptor
+  }
 }
-export const getAttackLogs = ({commit}, battle) => {
-  Vue.prototype.$http.get(`/battles/${battle.id}`)
-    .then(({data: attackLogs}) => commit('SET_ATTACK_LOGS', {battle, attackLogs}))
-    .catch(() => null)
+export const getAttackLogs = async ({commit}, battle) => {
+  try {
+    let {data: attackLogs} = await Vue.prototype.$http.get(`/battles/${battle.id}`)
+    commit('SET_ATTACK_LOGS', {battle, attackLogs})
+  } catch (e) {
+    // Error is parsed in axios interceptor
+  }
 }
 
 /*
@@ -21,28 +27,37 @@ export const getAttackLogs = ({commit}, battle) => {
  * Battle actions
  * **********************************
  */
-export const createBattle = ({commit}) => {
-  Vue.prototype.$http.post('/battles')
-    .then(({data: battle}) => commit('ADD_BATTLE', {battle}))
-    .catch(() => null)
+export const createBattle = async ({commit}) => {
+  try {
+    let {data: battle} = await Vue.prototype.$http.post('/battles')
+    commit('ADD_BATTLE', {battle})
+  } catch (e) {
+    // Error is parsed in axios interceptor
+  }
 }
-export const deleteBattle = ({commit, getters}, {battleId}) => {
+export const deleteBattle = async ({commit, getters, dispatch}, {battleId}) => {
   // Battle is stopped if it's currently in auto mode
   let battle = getters.getBattleById(battleId)
-  battle.isAutomatic && commit('SET_BATTLE_IS_AUTOMATIC', {battle, value: false })
+  battle.isAutomatic && dispatch('pauseBattle', battle)
 
-  Vue.prototype.$http.delete(`/battles/${battleId}`)
-    .then(() => commit('REMOVE_BATTLE', {battleId}))
-    .catch(() => null)
+  try {
+    await Vue.prototype.$http.delete(`/battles/${battleId}`)
+    commit('REMOVE_BATTLE', {battleId})
+  } catch (e) {
+    // Error is parsed in axios interceptor
+  }
 }
-export const resetBattle = ({commit, getters}, {battleId}) => {
+export const resetBattle = async ({commit, getters, dispatch}, {battleId}) => {
   // Battle is stopped if it's currently in auto mode
   let battle = getters.getBattleById(battleId)
-  battle.isAutomatic && commit('SET_BATTLE_IS_AUTOMATIC', {battle, value: false })
+  battle.isAutomatic && dispatch('pauseBattle', battle)
 
-  Vue.prototype.$http.put(`/battles/${battleId}/reset`)
-    .then(({data: battle}) => commit('UPDATE_BATTLE', {battle}))
-    .catch(() => null)
+  try {
+    let {data: battle} = await Vue.prototype.$http.put(`/battles/${battleId}/reset`)
+    commit('UPDATE_BATTLE', {battle})
+  } catch (e) {
+    // Error is parsed in axios interceptor
+  }
 }
 export const startBattle = ({state, commit, getters, dispatch}, battle) => {
   // Since the action will be called again, isAutomatic should be set only if it's needed
@@ -112,7 +127,7 @@ export const fireAttack = ({commit, dispatch}, {battle, armyId, resolve, reject}
  * Army actions
  * **********************************
  */
-export const addArmy = ({state, getters, commit}, {army, battleId}) => {
+export const addArmy = async ({state, getters, commit}, {newArmy, battleId}) => {
   // We need to get ordinal number for new army
   const battle = getters.getBattleById(battleId)
   let ordinalNumber = battle.armies.length + 1
@@ -120,9 +135,16 @@ export const addArmy = ({state, getters, commit}, {army, battleId}) => {
     ordinalNumber = getters.getAttacker(battle).ordinal_number
   }
 
-  Vue.prototype.$http.post('/armies', {battle_id: battleId, ordinal_number: ordinalNumber, ...army})
-    .then(({data: army}) => commit('ADD_ARMY', {army}))
-    .catch(() => null)
+  try {
+    let {data: army} = await Vue.prototype.$http.post('/armies', {
+      battle_id: battleId,
+      ordinal_number: ordinalNumber,
+      ...newArmy
+    })
+    commit('ADD_ARMY', {army})
+  } catch (e) {
+    // Error is parsed in axios interceptor
+  }
 }
 export const startReload = ({state, commit}, {battle, armyId}) => {
   let army = battle.armies.find(a => a.id === armyId)

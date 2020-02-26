@@ -1,3 +1,5 @@
+import config from "../config";
+
 export default {
   error: {
     visibility: false,
@@ -6,5 +8,5 @@ export default {
 
   battles: [],
 
-  reloadIntervalPerUnit: 10 // interval in ms
+  reloadIntervalPerUnit: config.reloadIntervalPerUnit
 }

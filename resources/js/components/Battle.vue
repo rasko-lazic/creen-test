@@ -85,7 +85,7 @@
       },
       addRandomArmy() {
         this.addArmy({
-          army: {
+          newArmy: {
             name: `Division_${getRandomInt(100, 999)}`,
             size: getRandomInt(80, 100),
             strategy: ['Random', 'Weakest', 'Strongest'][getRandomInt(0, 2)]
@@ -101,7 +101,7 @@
         }
       },
       callAddArmy() {
-        this.addArmy({army: this.newArmy, battleId: this.battle.id})
+        this.addArmy({newArmy: this.newArmy, battleId: this.battle.id})
         this.hideArmyForm()
       },
       ...mapActions([
