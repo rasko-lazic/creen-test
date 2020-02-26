@@ -14,22 +14,10 @@ class CORS {
      * @return mixed
      */
     public function handle($request, Closure $next) {
-        // For testing purposes, allow everything
-        $headers = [
-            'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, PUT, PATCH, DELETE',
-            'Access-Control-Allow-Headers' => $request->header('Access-Control-Request-Headers', '*'),
-            'Access-Control-Max-Age' => 60 * 60 * 24
-        ];
-        if ($request->getMethod() == "OPTIONS") {
-            // handle preflight request
-            return Response::make('OK', 200, $headers);
-        } else {
-            $response = $next($request);
-            foreach ($headers as $key => $value) {
-                $response->headers->set($key, $value);
-            }
-            return $response;
-        }
+        return $next($request)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With')
+            ->header('Access-Control-Expose-Headers', 'Authorization')
+            ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     }
 }
